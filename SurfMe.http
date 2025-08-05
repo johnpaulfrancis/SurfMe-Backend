@@ -1,0 +1,6 @@
+@SurfMe_HostAddress = http://localhost:5244
+
+GET {{SurfMe_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
