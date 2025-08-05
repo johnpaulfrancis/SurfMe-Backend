@@ -10,7 +10,7 @@ builder.Services.AddSwaggerGen(builder =>
 {
     builder.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
     {
-        Title = "SufMe API",
+        Title = "SurfMe API",
         Version = "v1"
     });
 });
@@ -24,7 +24,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(builder =>
     {
-        builder.SwaggerEndpoint("/swagger/v1/swagger.json", "SufMe API V1");
+        builder.SwaggerEndpoint("/swagger/v1/swagger.json", "SurfMe API V1");
         builder.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
     });
 }
