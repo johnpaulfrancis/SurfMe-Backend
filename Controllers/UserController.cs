@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SurfMe.Models.User;
+using SurfMe.Service;
 
 namespace SurfMe.Controllers
 {
@@ -7,6 +8,13 @@ namespace SurfMe.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        private readonly JWTService _jwtService;
+
+        public UserController(JWTService jwtService)
+        {
+            _jwtService = jwtService;
+        }
+
         private readonly Dictionary<string, string> users = new()
         {
             { "admin", "admin123" },
@@ -20,7 +28,8 @@ namespace SurfMe.Controllers
             {
                 if (storedPassword == model.Password)
                 {
-                    return Ok(new { message = "Login successful", ipAddress = model.IpAddress });
+                    var token = _jwtService.GenerateToken(model.UserName);
+                    return Ok(new { token });
                 }
             }
             return Unauthorized(new { message = "Invalid username or password" });
