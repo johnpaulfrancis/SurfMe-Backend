@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using SurfMe.Data;
 using SurfMe.Models.User;
 using SurfMe.Service;
 
@@ -9,28 +11,24 @@ namespace SurfMe.Controllers
     public class UserController : ControllerBase
     {
         private readonly JWTService _jwtService;
+        private readonly ApplicationDbContext _applicationDbContext;
 
-        public UserController(JWTService jwtService)
+        public UserController(JWTService jwtService, ApplicationDbContext applicationDbContext)
         {
             _jwtService = jwtService;
+            _applicationDbContext = applicationDbContext;
         }
 
-        private readonly Dictionary<string, string> users = new()
-        {
-            { "admin", "admin123" },
-            { "john", "password" }
-        };
 
         [HttpPost("login")]
-        public IActionResult UserLogin([FromBody] LoginModel model)
+        public async Task<IActionResult> UserLogin([FromBody] LoginModel model)
         {
-            if (users.TryGetValue(model.UserName, out var storedPassword))
+            var user = await _applicationDbContext.Tbl_Users
+                .FirstOrDefaultAsync(u => u.LoginName == model.UserName && u.Password == model.Password && u.IsActive);
+            if (user != null)
             {
-                if (storedPassword == model.Password)
-                {
-                    var token = _jwtService.GenerateToken(model.UserName);
-                    return Ok(new { token });
-                }
+                var token = _jwtService.GenerateToken(model.UserName);
+                return Ok(new { token });
             }
             return Unauthorized(new { message = "Invalid username or password" });
         }

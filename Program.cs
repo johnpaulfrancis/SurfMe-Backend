@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using SurfMe.Data;
 using SurfMe.Service;
 using System.Text;
 
@@ -37,6 +39,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     };
 });
 
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -55,6 +60,16 @@ app.UseHttpsRedirection();
 // Add auth middleware
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Apply migrations on startup -- for publishing in azure
+if (!app.Environment.IsDevelopment())
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        db.Database.Migrate(); // This applies all pending migrations
+    }
+}
 
 app.MapControllers();
 
