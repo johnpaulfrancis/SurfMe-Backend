@@ -21,16 +21,16 @@ namespace SurfMe.Controllers
 
 
         [HttpPost("login")]
-        public async Task<IActionResult> UserLogin([FromBody] LoginModel model)
+        public async Task<IActionResult> UserLogin(LoginModel model)
         {
             var user = await _applicationDbContext.Tbl_Users
                 .FirstOrDefaultAsync(u => u.LoginName == model.UserName && u.Password == model.Password && u.IsActive);
             if (user != null)
             {
                 var token = _jwtService.GenerateToken(model.UserName);
-                return Ok(new { token });
+                return Ok(new { statusCode = 200, token });
             }
-            return Unauthorized(new { message = "Invalid username or password" });
+            return Unauthorized(new { statusCode = 401, message = "Invalid username or password" });
         }
     }
 }

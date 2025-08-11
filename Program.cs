@@ -7,8 +7,20 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 
+// Add CORS service
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularLocalhost",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200", "https://myapp.com") // Angular dev URL or production url
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
+// Add services to the container.
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -56,6 +68,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseCors("AllowAngularLocalhost");
 app.UseHttpsRedirection();
 // Add auth middleware
 app.UseAuthentication();
