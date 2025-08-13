@@ -70,6 +70,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("AllowAngularLocalhost");
 app.UseHttpsRedirection();
+
+app.UseMiddleware<APILoggerService>(); //to log API calls
+
 // Add auth middleware
 app.UseAuthentication();
 app.UseAuthorization();

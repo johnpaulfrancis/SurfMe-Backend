@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SurfMe.Data;
 
@@ -11,9 +12,11 @@ using SurfMe.Data;
 namespace SurfMe.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250811161351_Logging API request and responses")]
+    partial class LoggingAPIrequestandresponses
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,20 +45,11 @@ namespace SurfMe.Migrations
                     b.Property<DateTime>("LogDateInUTC")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Method")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Path")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Request")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Response")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("StatusCode")
-                        .HasColumnType("int");
 
                     b.HasKey("LogId");
 

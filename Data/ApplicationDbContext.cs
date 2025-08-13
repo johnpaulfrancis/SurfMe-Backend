@@ -10,5 +10,6 @@ namespace SurfMe.Data
         }
 
         public DbSet<Models.TableSchema.UserTableModel> Tbl_Users { get; set; }
+        public DbSet<Models.TableSchema.APILoggerTableModel>Tbl_APILogger { get; set; }
     }
 }
