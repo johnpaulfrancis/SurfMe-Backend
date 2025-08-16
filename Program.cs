@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using SurfMe.Data;
 using SurfMe.Service;
 using System.Text;
@@ -8,13 +9,19 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 
+// Configure Serilog to log to a file
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.File("logs/errors.txt", rollingInterval: RollingInterval.Day) // daily log files
+    .CreateLogger();
+builder.Host.UseSerilog();
+
 // Add CORS service
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularLocalhost",
         policy =>
         {
-            policy.WithOrigins("http://localhost:4200", "https://myapp.com") // Angular dev URL or production url
+            policy.WithOrigins("http://localhost:4200", "https://surfmeappservic-cqg5hdbegfdqb2f0.centralindia-01.azurewebsites.net", "https://yellow-meadow-070a22d00.1.azurestaticapps.net") // Angular dev URL or production url
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
@@ -57,8 +64,8 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectio
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI(builder =>
@@ -66,27 +73,29 @@ if (app.Environment.IsDevelopment())
         builder.SwaggerEndpoint("/swagger/v1/swagger.json", "SurfMe API V1");
         builder.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
     });
-}
+//}
+
+app.UseMiddleware<ErrorHandlingMiddleware>(); // register our middleware
+app.UseMiddleware<APILoggerService>(); //to log API calls
 
 app.UseCors("AllowAngularLocalhost");
 app.UseHttpsRedirection();
-
-app.UseMiddleware<APILoggerService>(); //to log API calls
 
 // Add auth middleware
 app.UseAuthentication();
 app.UseAuthorization();
 
 // Apply migrations on startup -- for publishing in azure
-if (!app.Environment.IsDevelopment())
-{
-    using (var scope = app.Services.CreateScope())
-    {
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        db.Database.Migrate(); // This applies all pending migrations
-    }
-}
-
+//if (!app.Environment.IsDevelopment())
+//{
+//    using (var scope = app.Services.CreateScope())
+//    {
+//        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+//        db.Database.Migrate(); // This applies all pending migrations
+//    }
+//}
+app.UseRouting();
 app.MapControllers();
+
 
 app.Run();
