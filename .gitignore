@@ -361,3 +361,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/.config/dotnet-tools.json
+/appsettings.json
+/Properties/ServiceDependencies/SurfMeAppServic - Web Deploy/profile.arm.json
+/Properties/serviceDependencies.json
+/Properties/serviceDependencies.SurfMeAppServic - Web Deploy.json

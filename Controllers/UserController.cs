@@ -27,7 +27,7 @@ namespace SurfMe.Controllers
                 .FirstOrDefaultAsync(u => u.LoginName == model.UserName && u.Password == model.Password && u.IsActive);
             if (user != null)
             {
-                var token = _jwtService.GenerateToken(model.UserName);
+                var token = _jwtService.GenerateToken(user.Name);
                 return Ok(new { statusCode = 200, token });
             }
             return Unauthorized(new { statusCode = 401, message = "Invalid username or password" });
