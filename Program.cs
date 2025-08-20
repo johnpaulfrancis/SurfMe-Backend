@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using SurfMe.Data;
+using SurfMe.Models;
 using SurfMe.Service;
 using System.Text;
 
@@ -60,6 +61,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+//Register the EncryptDecryptService with configuration
+builder.Services.Configure<EncryptDecryptServiceModel>(builder.Configuration.GetSection("EncryptionSettings"));
+// Register the EncryptDecrypt as a singleton service
+builder.Services.AddSingleton<EncryptDecryptService>();
 
 var app = builder.Build();
 

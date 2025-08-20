@@ -14,14 +14,15 @@ namespace SurfMe.Service
             _config = config;
         }
 
-        public string GenerateToken(string userName)
+        public string GenerateToken(string userName, string userId)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name, userName)
+                new Claim(ClaimTypes.Name, userName),
+                new Claim(ClaimTypes.PrimarySid, userId)
             };
 
             var token = new JwtSecurityToken(
