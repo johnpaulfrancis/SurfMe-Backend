@@ -30,7 +30,7 @@ namespace SurfMe.Controllers
         public async Task<IActionResult> UserLogin(LoginModel model)
         {
             var user = await _applicationDbContext.Tbl_Users
-                .FirstOrDefaultAsync(u => u.LoginName == model.UserName && u.Password == model.Password && u.IsActive);
+                .FirstOrDefaultAsync(u => u.LoginName == model.UserName.Trim() && u.Password == model.Password.Trim() && u.IsActive == true);
             if (user != null)
             {
                 var token = _jwtService.GenerateToken(user.Name, _encryptDecryptService.Encrypt(Convert.ToString(user.UserId)));

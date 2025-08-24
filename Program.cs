@@ -66,6 +66,7 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectio
 builder.Services.Configure<EncryptDecryptServiceModel>(builder.Configuration.GetSection("EncryptionSettings"));
 // Register the EncryptDecrypt as a singleton service
 builder.Services.AddSingleton<EncryptDecryptService>();
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
