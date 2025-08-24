@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SurfMe.Models;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -35,6 +36,41 @@ namespace SurfMe.Controllers
             _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             var url = $"https://api.spotify.com/v1/search?q={query}&limit=20&type=track&offset=0";
             var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+            var result = await response.Content.ReadAsStringAsync();
+            return Content(result, "application/json");
+        }
+
+        /// <summary>
+        /// TO get new releases
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
+        [HttpPost("new-release")]
+        public async Task<IActionResult>GetNewRelease([FromBody] UriRequestModel request)
+        {
+            if (request == null || string.IsNullOrWhiteSpace(request.Uri))
+            {
+                return BadRequest("URL is required.");
+            }
+            var token = await GetSpotifyAccessToken();
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            var response = await _httpClient.GetAsync(request.Uri);
+            response.EnsureSuccessStatusCode();
+            var result = await response.Content.ReadAsStringAsync();
+            return Content(result, "application/json");
+        }
+
+        [HttpPost("tracks")]
+        public async Task<IActionResult> GetTracksInAnAlbum([FromBody] UriRequestModel request)
+        {
+            if (request == null || string.IsNullOrWhiteSpace(request.Uri))
+            {
+                return BadRequest("URL is required.");
+            }
+            var token = await GetSpotifyAccessToken();
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            var response = await _httpClient.GetAsync(request.Uri);
             response.EnsureSuccessStatusCode();
             var result = await response.Content.ReadAsStringAsync();
             return Content(result, "application/json");
